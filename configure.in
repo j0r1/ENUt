@@ -1,10 +1,13 @@
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(enut, 1.1.0)
+AM_INIT_AUTOMAKE(enut, 1.1.1)
 
 NUTCONFIG_SUPPORT_ENET="// No ENet support"
 NUTCONFIG_SUPPORT_IPV6="// No IPv6 support"
 NUTCONFIG_SUPPORT_IPV6_MULTICAST="// No IPv6 multicast support"
 NUTCONFIG_SUPPORT_POLL="// No 'poll()' support"
+NUTCONFIG_SUPPORT_IPPKTINFO="// No IP_PKTINFO support"
+NUTCONFIG_SUPPORT_MSGNOSIGNAL="// No MSG_NOSIGNAL support"
+NUTCONFIG_SUPPORT_SONOSIGPIPE="// No SO_NOSIGPIPE support"
 NUTLINKLIBS="$LDFLAGS"
 NUTINCLUDES="$CPPFLAGS"
 
@@ -98,6 +101,67 @@ EOF
 fi
 
 dnl ---------------------------------------------------------------------------
+dnl Check IP_PKTINFO
+dnl ---------------------------------------------------------------------------
+
+AC_MSG_CHECKING(IP_PKTINFO support in recvmsg)
+AC_COMPILE_IFELSE([
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+
+	int main(void)
+	{
+		int t = IP_PKTINFO;
+		return 0;
+	}
+	],[
+	AC_MSG_RESULT(yes)
+	NUTCONFIG_SUPPORT_IPPKTINFO="#define NUTCONFIG_SUPPORT_IPPKTINFO"],
+	AC_MSG_RESULT(no))
+
+dnl ---------------------------------------------------------------------------
+dnl Check MSG_NOSIGNAL
+dnl ---------------------------------------------------------------------------
+
+AC_MSG_CHECKING(if MSG_NOSIGNAL is available)
+AC_COMPILE_IFELSE([
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+
+	int main(void)
+	{
+		int t = MSG_NOSIGNAL;
+		return 0;
+	}
+	],[
+	AC_MSG_RESULT(yes)
+	NUTCONFIG_SUPPORT_IPPKTINFO="#define NUTCONFIG_SUPPORT_MSGNOSIGNAL"],
+	AC_MSG_RESULT(no))
+
+dnl ---------------------------------------------------------------------------
+dnl Check SO_NOSIGPIPE
+dnl ---------------------------------------------------------------------------
+
+AC_MSG_CHECKING(if SO_NOSIGPIPE is available)
+AC_COMPILE_IFELSE([
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+	#include <signal.h>
+
+	int main(void)
+	{
+		int t = SO_NOSIGPIPE;
+		return 0;
+	}
+	],[
+	AC_MSG_RESULT(yes)
+	NUTCONFIG_SUPPORT_IPPKTINFO="#define NUTCONFIG_SUPPORT_SONOSIGPIPE"],
+	AC_MSG_RESULT(no))
+
+dnl ---------------------------------------------------------------------------
 dnl Check ENet support
 dnl ---------------------------------------------------------------------------
 
@@ -118,6 +182,9 @@ AC_SUBST(NUTCONFIG_SUPPORT_ENET)
 AC_SUBST(NUTCONFIG_SUPPORT_IPV6)
 AC_SUBST(NUTCONFIG_SUPPORT_IPV6_MULTICAST)
 AC_SUBST(NUTCONFIG_SUPPORT_POLL)
+AC_SUBST(NUTCONFIG_SUPPORT_IPPKTINFO)
+AC_SUBST(NUTCONFIG_SUPPORT_MSGNOSIGNAL)
+AC_SUBST(NUTCONFIG_SUPPORT_SONOSIGPIPE)
 AC_SUBST(NUTINCLUDES)
 AC_SUBST(NUTLINKLIBS)
 

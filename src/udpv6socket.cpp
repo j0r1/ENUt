@@ -261,8 +261,14 @@ bool UDPv6Socket::write(const void *data, size_t &length, const NetworkLayerAddr
 	addr.sin6_addr = ip.getAddress();
 	addr.sin6_port = htons(destinationPort);
 	
+#ifdef NUTCONFIG_SUPPORT_MSGNOSIGNAL
+	int flags = MSG_NOSIGNAL;
+#else
+	int flags = 0;
+#endif // NUTCONFIG_SUPPORT_MSGNOSIGNAL
+
 	x = length;
-	y = sendto(m_sock, data, x, MSG_NOSIGNAL, (struct sockaddr *)&addr, sizeof(struct sockaddr_in6));
+	y = sendto(m_sock, data, x, flags, (struct sockaddr *)&addr, sizeof(struct sockaddr_in6));
 	if (y == -1)
 	{
 		setErrorString(std::string(UDPV6SOCKET_ERRSTR_CANTWRITE) + std::string(strerror(errno)));
@@ -324,7 +330,7 @@ bool UDPv6Socket::read(void *buffer, size_t &bufferSize)
 	if (!m_obtainDest)
 	{
 		struct sockaddr_in6 addr;
-		size_t addrLen = sizeof(struct sockaddr_in6);
+		socklen_t addrLen = sizeof(struct sockaddr_in6);
 		size_t x = bufferSize;
 		ssize_t y;
 
@@ -432,6 +438,12 @@ bool UDPv6Socket::internalCreate(in6_addr ip, uint16_t port, bool obtainDestinat
 		setErrorString(std::string(UDPV6SOCKET_ERRSTR_CANTBIND) + std::string(strerror(errno)));
 		return false;
 	}
+
+#ifdef NUTCONFIG_SUPPORT_SONOSIGPIPE
+	int value = 1;
+
+	setsockopt(s, SOL_SOCKET, SO_NOSIGPIPE, (void *)&value, sizeof(int));
+#endif // NUTCONFIG_SUPPORT_SONOSIGPIPE
 
 	socklen_t addrLen = sizeof(struct sockaddr_in6);
 	memset(&addr, 0, addrLen);

@@ -3,6 +3,13 @@
                               ENUt ChangeLog
 
 
+Version 1.1.1, October 2010
+ * Added check in the configure script to see if IP_PKTINFO is
+   available, and added a corresponding define in the source code.
+ * Added check and define for MSG_NOSIGNAL
+ * Added check and define for SO_NOSIGPIPE
+ * Some changes for newer ENet 1.3.0 API
+
 Version 1.1.0, August 2008:
  * SocketWaiter now uses 'poll' if available.
  * EINTR in 'select' or 'poll' is now no longer considered to be an

@@ -1,5 +1,6 @@
-#include "ipv4address.h"
-#include "udpv4socket.h"
+#include <errut/errorbase.h>
+#include <enut/ipv4address.h>
+#include <enut/udpv4socket.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/select.h>
@@ -8,7 +9,6 @@
 #include <arpa/inet.h>
 #include <string>
 #include <iostream>
-#include <jthread.h>
 #include <cmath>
 #include <map>
 #include <list>
@@ -24,7 +24,7 @@ real_t getCurrentTime()
 	return (((real_t)tv.tv_sec)+((real_t)tv.tv_usec/1000000.0));
 }
 
-void checkError(bool ret, const nut::ErrorBase &obj)
+void checkError(bool ret, const errut::ErrorBase &obj)
 {
 	if (ret)
 		return;
@@ -34,7 +34,7 @@ void checkError(bool ret, const nut::ErrorBase &obj)
 	exit(-1);
 }
 
-void checkError(bool ret, const nut::ErrorBase *obj)
+void checkError(bool ret, const errut::ErrorBase *obj)
 {
 	if (ret)
 		return;
@@ -99,22 +99,33 @@ void TimeoutDestinations(real_t timeout)
 
 int main(int argc, char *argv[])
 {
-	if (argc != 3)
+	if (!(argc == 3 || argc == 4))
 	{
-		std::cout << "Usage: autoforwarder port timeout" << std::endl << std::endl;
+		std::cout << "Usage: autoforwarder port timeout [bind_address]" << std::endl << std::endl;
 		return -1;
 	}
 	
 	uint16_t localPort = atoi(argv[1]);
 	int delay = atoi(argv[2]);
-	
+	nut::IPv4Address bindAddress;
+
+	if (argc == 4)
+	{
+		if (!bindAddress.setAddress(argv[3]))
+		{
+			std::cout << "Unable to set bind address to: " << argv[3] << std::endl;
+			return -1;
+		}
+	}
+
 	nut::UDPv4Socket *pSock = new nut::UDPv4Socket("Forwarding socket");	
 	bool ret;
 
+	std::cout << "Bind address:  " << bindAddress.getAddressString() << std::endl;
 	std::cout << "Bind port:     " << localPort << std::endl;
 	std::cout << "Timeout delay: " << delay << " seconds" << std::endl;
 	
-	ret = pSock->create(localPort);
+	ret = pSock->create(bindAddress, localPort);
 	checkError(ret, pSock);
 
 	while (1)
@@ -166,4 +177,3 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-				

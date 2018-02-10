@@ -257,7 +257,11 @@ bool UDPv4Socket::write(const void *data, size_t &length, const NetworkLayerAddr
 #else
 	size_t x = length;
 	ssize_t y;
+#ifdef NUTCONFIG_SUPPORT_MSGNOSIGNAL
 	int flags = MSG_NOSIGNAL;
+#else 
+	int flags = 0;
+#endif // NUTCONFIG_SUPPORT_MSGNOSIGNAL
 #endif // WIN32 || _WIN32_WCE
 	struct sockaddr_in addr;
 
@@ -371,7 +375,7 @@ bool UDPv4Socket::read(void *buffer, size_t &bufferSize)
 #else
 		size_t x = bufferSize;
 		ssize_t y;
-		size_t addrLen = sizeof(struct sockaddr_in);
+		socklen_t addrLen = sizeof(struct sockaddr_in);
 #endif // WIN32 || _WIN32_WCE
 		struct sockaddr_in addr;
 
@@ -437,6 +441,7 @@ bool UDPv4Socket::read(void *buffer, size_t &bufferSize)
 		return false;
 #endif // _WIN32_WCE
 #else
+#ifdef NUTCONFIG_SUPPORT_IPPKTINFO
 		struct msghdr mhdr;
 		struct sockaddr_in addr;
 		struct iovec vec;
@@ -481,6 +486,10 @@ bool UDPv4Socket::read(void *buffer, size_t &bufferSize)
 			else
 				chdr = CMSG_NXTHDR(&mhdr,chdr);
 		}
+#else
+		setErrorString(UDPV4SOCKET_ERRSTR_DESTADDRNOTSUPPORTED);
+		return false;
+#endif // NUTCONFIG_SUPPORT_IPPKTINFO
 #endif // WIN32 || _WIN32_WCE
 	}
 	return true;
@@ -531,6 +540,12 @@ bool UDPv4Socket::internalCreate(uint32_t ip, uint16_t port, bool obtainDestinat
 		return false;
 	}
 
+#ifdef NUTCONFIG_SUPPORT_SONOSIGPIPE
+	int value = 1;
+
+	setsockopt(s, SOL_SOCKET, SO_NOSIGPIPE, (void *)&value, sizeof(int));
+#endif // NUTCONFIG_SUPPORT_SONOSIGPIPE
+
 	socklen_t addrLen = sizeof(struct sockaddr_in);
 	memset(&addr, 0, addrLen);
 	
@@ -570,6 +585,7 @@ bool UDPv4Socket::internalCreate(uint32_t ip, uint16_t port, bool obtainDestinat
 		return false;
 #endif // _WIN32_WCE
 #else
+#ifdef NUTCONFIG_SUPPORT_IPPKTINFO
 		int val = 1;
 		if (setsockopt(s, IPPROTO_IP, IP_PKTINFO, &val, sizeof(int)) == NUTSOCKERR)
 		{
@@ -577,6 +593,11 @@ bool UDPv4Socket::internalCreate(uint32_t ip, uint16_t port, bool obtainDestinat
 			setErrorString(std::string(UDPV4SOCKET_ERRSTR_CANTENABLEPKTINFO) + getSocketErrorString());
 			return false;
 		}
+#else
+		NUTCLOSE(s);
+		setErrorString(UDPV4SOCKET_ERRSTR_DESTADDRNOTSUPPORTED);
+		return false;
+#endif // NUTCONFIG_SUPPORT_IPPKTINFO
 #endif // WIN32 || _WIN32_WCE
 		m_obtainDest = true;
 	}

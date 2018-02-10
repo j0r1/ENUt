@@ -253,6 +253,12 @@ bool TCPv4Socket::accept(TCPSocket **newSocket)
 
 	// Ok, connection accepted
 	
+#ifdef NUTCONFIG_SUPPORT_SONOSIGPIPE
+	int value = 1;
+
+	setsockopt(newSock, SOL_SOCKET, SO_NOSIGPIPE, (void *)&value, sizeof(int));
+#endif // NUTCONFIG_SUPPORT_SONOSIGPIPE
+
 	*newSocket = new TCPv4Socket(newSock, m_localPort, ntohl(addr.sin_addr.s_addr), ntohs(addr.sin_port));
 	return true;
 }
@@ -278,7 +284,11 @@ bool TCPv4Socket::write(const void *data, size_t &length)
 #else
 	size_t x = length;
 	ssize_t y;
+#ifdef NUTCONFIG_SUPPORT_MSGNOSIGNAL
 	int flags = MSG_NOSIGNAL;
+#else
+	int flags = 0;
+#endif // NUTCONFIG_SUPPORT_MSGNOSIGNAL
 #endif // WIN32 || _WIN32_WCE
 
 	y = send(m_sock, (const char *)data, x, flags);
@@ -388,6 +398,11 @@ bool TCPv4Socket::internalCreate(uint32_t ip, uint16_t port)
 		setErrorString(std::string(TCPV4SOCKET_ERRSTR_CANTBIND) + getSocketErrorString());
 		return false;
 	}
+#ifdef NUTCONFIG_SUPPORT_SONOSIGPIPE
+	int value = 1;
+
+	setsockopt(s, SOL_SOCKET, SO_NOSIGPIPE, (void *)&value, sizeof(int));
+#endif // NUTCONFIG_SUPPORT_SONOSIGPIPE
 
 #if (defined(WIN32) || defined(_WIN32_WCE))
 	int addrLen = sizeof(struct sockaddr_in);

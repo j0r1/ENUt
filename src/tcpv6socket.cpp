@@ -229,6 +229,12 @@ bool TCPv6Socket::accept(TCPSocket **newSocket)
 		return false;
 	}
 
+#ifdef NUTCONFIG_SUPPORT_SONOSIGPIPE
+	int value = 1;
+
+	setsockopt(newSock, SOL_SOCKET, SO_NOSIGPIPE, (void *)&value, sizeof(int));
+#endif // NUTCONFIG_SUPPORT_SONOSIGPIPE
+
 	// Ok, connection accepted
 	
 	*newSocket = new TCPv6Socket(newSock, m_localPort, addr.sin6_addr, ntohs(addr.sin6_port));
@@ -251,9 +257,14 @@ bool TCPv6Socket::write(const void *data, size_t &length)
 
 	size_t x;
 	ssize_t y;
+#ifdef NUTCONFIG_SUPPORT_MSGNOSIGNAL
+	int flags = MSG_NOSIGNAL;
+#else
+	int flags = 0;
+#endif // NUTCONFIG_SUPPORT_MSGNOSIGNAL
 
 	x = length;
-	y = send(m_sock, data, x, MSG_NOSIGNAL);
+	y = send(m_sock, data, x, flags);
 	if (y == -1)
 	{
 		setErrorString(std::string(TCPV6SOCKET_ERRSTR_CANTWRITE) + std::string(strerror(errno)));
@@ -348,6 +359,12 @@ bool TCPv6Socket::internalCreate(in6_addr ip, uint16_t port)
 		setErrorString(std::string(TCPV6SOCKET_ERRSTR_CANTBIND) + std::string(strerror(errno)));
 		return false;
 	}
+
+#ifdef NUTCONFIG_SUPPORT_SONOSIGPIPE
+	int value = 1;
+
+	setsockopt(s, SOL_SOCKET, SO_NOSIGPIPE, (void *)&value, sizeof(int));
+#endif // NUTCONFIG_SUPPORT_SONOSIGPIPE
 
 	socklen_t addrLen = sizeof(struct sockaddr_in6);
 	memset(&addr, 0, addrLen);

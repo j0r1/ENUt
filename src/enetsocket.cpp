@@ -103,7 +103,7 @@ bool ENETSocket::createClient(int maxConnections)
 		return false;
 	}
 
-	ENetHost *pHost = enet_host_create(0, maxConnections, 0, 0);
+	ENetHost *pHost = enet_host_create(0, maxConnections, 0, 0, 0);
 	if (pHost == 0)
 	{
 		setErrorString(ENETSOCKET_ERRSTR_CANTCREATECLIENTHOST);
@@ -112,7 +112,6 @@ bool ENETSocket::createClient(int maxConnections)
 
 	struct sockaddr_in addr;
 
-#if ! (defined (WIN32) || defined(_WIN32_WCE))
 	memset(&addr, 0, sizeof(struct sockaddr_in));
 	
 	addr.sin_family = AF_INET;
@@ -125,7 +124,6 @@ bool ENETSocket::createClient(int maxConnections)
 		setErrorString(ENETSOCKET_ERRSTR_CANTBINDSOCKET);
 		return false;
 	}
-#endif // ! (WIN32 || _WIN32_WCE)
 
 	socklen_t addrLen = sizeof(struct sockaddr_in);
 	memset(&addr, 0, addrLen);
@@ -326,7 +324,7 @@ bool ENETSocket::requestConnection(const IPv4Address &destAddress, uint16_t dest
 	addr.host = destAddress.getAddressNBO();
 	addr.port = destPort;
 	
-	if (enet_host_connect(m_pHost, &addr, channelCount) == 0)
+	if (enet_host_connect(m_pHost, &addr, channelCount, 0) == 0)
 	{
 		setErrorString(ENETSOCKET_ERRSTR_CANTCONNECT);
 		return false;
@@ -498,7 +496,7 @@ bool ENETSocket::createServerInternal(const ENetAddress &bindAddress, int maxCon
 		return false;
 	}
 	
-	ENetHost *pHost = enet_host_create(&bindAddress, maxConnections, 0, 0);
+	ENetHost *pHost = enet_host_create(&bindAddress, maxConnections, 0, 0, 0);
 	if (pHost == 0)
 	{
 		setErrorString(ENETSOCKET_ERRSTR_CANTCREATESERVERHOST);
