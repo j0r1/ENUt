@@ -3,7 +3,7 @@
   This file is a part of ENUt, a library containing network
   programming utilities.
   
-  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+  Copyright (C) 2006-2012  Hasselt University - Expertise Centre for
                       Digital Media (EDM) (http://www.edm.uhasselt.be)
 
   This library is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@
 #ifdef NUTCONFIG_SUPPORT_IPV6
 
 #include "ipv6address.h"
+#include <stdio.h>
 
 namespace nut
 {

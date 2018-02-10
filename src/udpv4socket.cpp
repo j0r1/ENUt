@@ -3,7 +3,7 @@
   This file is a part of ENUt, a library containing network
   programming utilities.
   
-  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+  Copyright (C) 2006-2012  Hasselt University - Expertise Centre for
                       Digital Media (EDM) (http://www.edm.uhasselt.be)
 
   This library is free software; you can redistribute it and/or
@@ -606,7 +606,7 @@ bool UDPv4Socket::internalCreate(uint32_t ip, uint16_t port, bool obtainDestinat
 
 	m_sock = s;
 	m_localPort = ntohs(addr.sin_port);
-	m_bindIP = 0;
+	m_bindIP = ntohl(addr.sin_addr.s_addr);
 	m_isBlocking = true;
 	
 	return true;

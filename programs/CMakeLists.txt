@@ -1,0 +1,15 @@
+apply_include_paths("${ENUT_INTERNAL_INCLUDES}")
+apply_include_paths("${ENUT_EXTERNAL_INCLUDES}")
+
+foreach(IDX multicasttunnelserver)
+	add_executable(${IDX} ${IDX}.cpp)
+	if (UNIX OR ENUT_COMPILE_STATIC)
+		target_link_libraries(${IDX} enut-static ${ENUT_LINK_LIBS})
+	else ()
+		target_link_libraries(${IDX} enut-shared ${ENUT_LINK_LIBS})
+	endif (UNIX OR ENUT_COMPILE_STATIC)
+endforeach(IDX)
+
+if (ENUT_SUPPORT_ENET)
+	install(TARGETS multicasttunnelserver DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+endif (ENUT_SUPPORT_ENET)

@@ -1,7 +1,7 @@
 
 
                           EDM Network Utilities (ENUt)
-                                    (1.1.1)
+                                    (1.1.2)
 
 
 1. INTRODUCTION
@@ -35,17 +35,10 @@ archive. The short version is the following:
 The library depends on ErrUt, which can be found here:
 http://research.edm.uhasselt.be/jori/errut/errut.html
 
-3.1 Unix-like platforms
-
-Use the configure script and make to build the library. Run the configure
-script with option '--help' to see which options can be specified.
-
-3.2 Win32/WinCE
-
-Project files for MS Visual Studio 8 are included in the library archive.
-Take a look at the file 'nutconfig_win.h' to enable or disable some features.
-You may have to tune the project settings to make sure the right locations
-of other include files are set.
+Use the CMake build system to compile the library. In case extra
+include directories or libraries are needed, you can use the 
+'ADDITIONAL_' CMake variables to specify these. They will be stored in 
+both the resulting CMake configuration file and the pkg-config file.
 
 4. CONTACT
 

@@ -3,6 +3,12 @@
                               ENUt ChangeLog
 
 
+Version 1.1.2, July 2012
+ * Switched to the CMake build system.
+ * Can now compile as a DLL in MS-Windows
+ * Added  __APPLE_USE_RFC_3542 define in udpv6socket.cpp, to make compilation
+   on OS X possible.
+
 Version 1.1.1, October 2010
  * Added check in the configure script to see if IP_PKTINFO is
    available, and added a corresponding define in the source code.

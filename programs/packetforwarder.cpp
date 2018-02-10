@@ -1,3 +1,4 @@
+#include <errut/errorbase.h>
 #include "ipv4address.h"
 #include "udpv4socket.h"
 #include <unistd.h>
@@ -24,7 +25,7 @@ real_t getCurrentTime()
 	return (((real_t)tv.tv_sec)+((real_t)tv.tv_usec/1000000.0));
 }
 
-void checkError(bool ret, const nut::ErrorBase &obj)
+void checkError(bool ret, const errut::ErrorBase &obj)
 {
 	if (ret)
 		return;
@@ -34,7 +35,7 @@ void checkError(bool ret, const nut::ErrorBase &obj)
 	exit(-1);
 }
 
-void checkError(bool ret, const nut::ErrorBase *obj)
+void checkError(bool ret, const errut::ErrorBase *obj)
 {
 	if (ret)
 		return;
@@ -266,7 +267,7 @@ public:
 		m_mutex.Unlock();
 	}
 	
-	ReceiveThread::~ReceiveThread()
+	~ReceiveThread()
 	{
 		m_stopMutex.Lock();
 		m_stopThread = true;

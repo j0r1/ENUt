@@ -3,7 +3,7 @@
   This file is a part of ENUt, a library containing network
   programming utilities.
   
-  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+  Copyright (C) 2006-2012  Hasselt University - Expertise Centre for
                       Digital Media (EDM) (http://www.edm.uhasselt.be)
 
   This library is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@ namespace nut
 {
 
 /** Container for a pointer to data and a length field. */
-class Packet
+class ENUT_IMPORTEXPORT Packet
 {
 public:
 	/** Construct an empty packet. */
@@ -82,7 +82,7 @@ public:
 private:
 	// Make sure we don't accidentally copy such objects
 	Packet(const Packet &p)								{ }
-	Packet &operator=(const Packet &p)						{ }
+	Packet &operator=(const Packet &p)						{ return *this; }
 
 	uint8_t *m_pData;
 	size_t m_length;

@@ -3,7 +3,7 @@
   This file is a part of ENUt, a library containing network
   programming utilities.
   
-  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+  Copyright (C) 2006-2012  Hasselt University - Expertise Centre for
                       Digital Media (EDM) (http://www.edm.uhasselt.be)
 
   This library is free software; you can redistribute it and/or
@@ -48,7 +48,7 @@ class Socket;
 /** Allows you to wait for data to arrive on one or more sockets. 
  *  Allows you to wait for data to arrive on one or more sockets. This is
  *  basically a wrapper class for using the 'select' function. */
-class SocketWaiter : public errut::ErrorBase
+class ENUT_IMPORTEXPORT SocketWaiter : public errut::ErrorBase
 {
 public:
 	SocketWaiter();
@@ -57,6 +57,9 @@ public:
 
 	/** Adds a socket to the list of sockets which should be monitored. */
 	void addSocket(Socket &s)								{ m_sockets.push_back(&s); }
+
+	/** Remove a socket from the list of sockets which should be monitored. */
+	void removeSocket(Socket &s) 								{ m_sockets.remove(&s); }
 
 	/** Clears the list of sockets which should be monitored. */
 	void clear()										{ m_sockets.clear(); }
@@ -72,7 +75,7 @@ public:
 private:
 	// make sure we can't copy a socket waiter
 	SocketWaiter(const SocketWaiter &s) : errut::ErrorBase(s)				{ }
-	SocketWaiter &operator=(const SocketWaiter &s)						{ }
+	SocketWaiter &operator=(const SocketWaiter &s)						{ return *this; }
 	
 	std::string getSocketErrorString();
 	std::list<Socket *> m_sockets;

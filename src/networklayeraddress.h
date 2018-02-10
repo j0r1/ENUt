@@ -3,7 +3,7 @@
   This file is a part of ENUt, a library containing network
   programming utilities.
   
-  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+  Copyright (C) 2006-2012  Hasselt University - Expertise Centre for
                       Digital Media (EDM) (http://www.edm.uhasselt.be)
 
   This library is free software; you can redistribute it and/or
@@ -49,7 +49,7 @@ enum NetworkLayerProtocol
 };
 	
 /** Base class for network layer addresses. */
-class NetworkLayerAddress
+class ENUT_IMPORTEXPORT NetworkLayerAddress
 {
 protected:
 	NetworkLayerAddress(NetworkLayerProtocol p)					{ m_protocol = p; }

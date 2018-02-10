@@ -3,7 +3,7 @@
   This file is a part of ENUt, a library containing network
   programming utilities.
   
-  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+  Copyright (C) 2006-2012  Hasselt University - Expertise Centre for
                       Digital Media (EDM) (http://www.edm.uhasselt.be)
 
   This library is free software; you can redistribute it and/or
@@ -39,7 +39,7 @@ namespace nut
 {
 
 /** A TCP over IPv4 socket. */
-class TCPv4Socket : public TCPSocket
+class ENUT_IMPORTEXPORT TCPv4Socket : public TCPSocket
 {
 public:
 	/** Construct a TCP over IPv4 socket. */
@@ -78,7 +78,7 @@ protected:
 private:
 	// make sure we can't copy the socket
 	TCPv4Socket(const TCPv4Socket &s) : TCPSocket(s)					{ }
-	TCPv4Socket &operator=(const TCPv4Socket &s)						{ }
+	TCPv4Socket &operator=(const TCPv4Socket &s)						{ return *this; }
 	
 	bool internalCreate(uint32_t ip, uint16_t port);
 	void zeroAll();

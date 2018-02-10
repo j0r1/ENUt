@@ -3,7 +3,7 @@
   This file is a part of ENUt, a library containing network
   programming utilities.
   
-  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+  Copyright (C) 2006-2012  Hasselt University - Expertise Centre for
                       Digital Media (EDM) (http://www.edm.uhasselt.be)
 
   This library is free software; you can redistribute it and/or
@@ -42,7 +42,7 @@ namespace nut
 {
 
 /** A TCP over IPv6 socket. */
-class TCPv6Socket : public TCPSocket
+class ENUT_IMPORTEXPORT TCPv6Socket : public TCPSocket
 {
 public:
 	/** Construct a TCP over IPv6 socket. */

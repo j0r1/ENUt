@@ -3,7 +3,7 @@
   This file is a part of ENUt, a library containing network
   programming utilities.
   
-  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+  Copyright (C) 2006-2012  Hasselt University - Expertise Centre for
                       Digital Media (EDM) (http://www.edm.uhasselt.be)
 
   This library is free software; you can redistribute it and/or
@@ -36,13 +36,15 @@
 #ifdef NUTCONFIG_SUPPORT_IPV6
 
 #include "networklayeraddress.h"
-#include <netinet/in.h>
+#if ! (defined(WIN32) || defined(_WIN32_WCE))
+	#include <netinet/in.h>
+#endif
 
 namespace nut
 {
 
 /** An IPv6 address. */
-class IPv6Address : public NetworkLayerAddress
+class ENUT_IMPORTEXPORT IPv6Address : public NetworkLayerAddress
 {
 public:
 	IPv6Address() : NetworkLayerAddress(IPv6)						{ for (int i = 0 ; i < 16 ; i++) m_ip.s6_addr[i] = 0; }

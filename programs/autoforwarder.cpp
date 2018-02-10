@@ -1,8 +1,8 @@
-#include <errut/errorbase.h>
-#include <enut/ipv4address.h>
-#include <enut/udpv4socket.h>
+#include "ipv4address.h"
+#include "udpv4socket.h"
 #include <unistd.h>
 #include <stdlib.h>
+#include <time.h>
 #include <sys/select.h>
 #include <sys/time.h>
 #include <sys/socket.h>
@@ -22,6 +22,22 @@ real_t getCurrentTime()
 	gettimeofday(&tv, 0);
 
 	return (((real_t)tv.tv_sec)+((real_t)tv.tv_usec/1000000.0));
+}
+
+std::string getTimeString()
+{
+	char str[1024];
+	time_t t = time(0);
+	
+	strcpy(str, ctime(&t));
+	int len = strlen(str);
+
+	for (int i = 0 ; i < len ; i++)
+	{
+		if (str[i] == '\n' || str[i] == '\r')
+			str[i] = 0;
+	}
+	return std::string(str);
 }
 
 void checkError(bool ret, const errut::ErrorBase &obj)
@@ -73,7 +89,9 @@ void UpdateDestination(uint32_t ip, uint16_t port)
 		}
 	}
 
-	std::cout << "Adding destination " << ip << ":" << port << std::endl;
+	nut::IPv4Address addrStr(ip);
+
+	std::cout << getTimeString() << " | Adding destination " << addrStr.getAddressString() << ":" << port << std::endl;
 	destinations.push_back(Destination(ip,port));
 }
 
@@ -89,7 +107,9 @@ void TimeoutDestinations(real_t timeout)
 
 		if (diff > timeout)
 		{
-			std::cout << "Deleting destination " << (*it).GetIP() << ":" << (*it).GetPort() << std::endl;
+			nut::IPv4Address addrStr((*it).GetIP());
+
+			std::cout << getTimeString() << " | Deleting destination " << addrStr.getAddressString() << ":" << (*it).GetPort() << std::endl;
 			it = destinations.erase(it);
 		}
 		else
@@ -121,11 +141,20 @@ int main(int argc, char *argv[])
 	nut::UDPv4Socket *pSock = new nut::UDPv4Socket("Forwarding socket");	
 	bool ret;
 
+	std::cout << "Started on " << getTimeString() << std::endl;
 	std::cout << "Bind address:  " << bindAddress.getAddressString() << std::endl;
 	std::cout << "Bind port:     " << localPort << std::endl;
 	std::cout << "Timeout delay: " << delay << " seconds" << std::endl;
 	
 	ret = pSock->create(bindAddress, localPort);
+	checkError(ret, pSock);
+
+	int bufSize = 2000000;
+
+	ret = pSock->setSocketOption(SOL_SOCKET, SO_RCVBUF, (void *)&bufSize, sizeof(int));
+	checkError(ret, pSock);
+
+	ret = pSock->setSocketOption(SOL_SOCKET, SO_SNDBUF, (void *)&bufSize, sizeof(int));
 	checkError(ret, pSock);
 
 	while (1)

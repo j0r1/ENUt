@@ -3,7 +3,7 @@
   This file is a part of ENUt, a library containing network
   programming utilities.
   
-  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+  Copyright (C) 2006-2012  Hasselt University - Expertise Centre for
                       Digital Media (EDM) (http://www.edm.uhasselt.be)
 
   This library is free software; you can redistribute it and/or
@@ -43,7 +43,7 @@ namespace nut
 {
 
 /** An UDP over IPv4 socket. */
-class UDPv4Socket : public UDPSocket
+class ENUT_IMPORTEXPORT UDPv4Socket : public UDPSocket
 {
 public:
 	/** Constructs an UDP over IPv4 socket. */
@@ -82,7 +82,7 @@ protected:
 private:
 	// make sure we can't copy the socket
 	UDPv4Socket(const UDPv4Socket &s) : UDPSocket(s)						{ }
-	UDPv4Socket &operator=(const UDPv4Socket &s)							{ }
+	UDPv4Socket &operator=(const UDPv4Socket &s)							{ return *this; }
 	
 	void zeroAll();
 	bool internalCreate(uint32_t ip, uint16_t port, bool obtainDestination);

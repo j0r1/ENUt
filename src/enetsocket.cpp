@@ -3,7 +3,7 @@
   This file is a part of ENUt, a library containing network
   programming utilities.
   
-  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+  Copyright (C) 2006-2012  Hasselt University - Expertise Centre for
                       Digital Media (EDM) (http://www.edm.uhasselt.be)
 
   This library is free software; you can redistribute it and/or
@@ -217,7 +217,7 @@ bool ENETSocket::waitForEvent(int milliseconds)
 		{
 			ENetPeer *pPeer = event.peer;
 			
-			uint32_t connID = (uint32_t)pPeer->data;
+			uint32_t connID = (uint32_t)((uint64_t)pPeer->data);
 		
 			std::map<uint32_t, ENetPeer *>::iterator it = m_connectionMap.find(connID);
 
@@ -230,7 +230,7 @@ bool ENETSocket::waitForEvent(int milliseconds)
 		}
 		break;
 	case ENET_EVENT_TYPE_RECEIVE:
-		m_packetQueue.push_back(ENETPacket(event.packet, event.channelID, (uint32_t)event.peer->data));
+		m_packetQueue.push_back(ENETPacket(event.packet, event.channelID, (uint32_t)((uint64_t)event.peer->data)));
 		break;
 	default:
 		return true;
@@ -287,7 +287,7 @@ bool ENETSocket::poll()
 				{
 					ENetPeer *pPeer = event.peer;
 					
-					uint32_t connID = (uint32_t)pPeer->data;
+					uint32_t connID = (uint32_t)((uint64_t)pPeer->data);
 				
 					std::map<uint32_t, ENetPeer *>::iterator it = m_connectionMap.find(connID);
 		
@@ -300,7 +300,7 @@ bool ENETSocket::poll()
 				}
 				break;
 			case ENET_EVENT_TYPE_RECEIVE:
-				m_packetQueue.push_back(ENETPacket(event.packet, event.channelID, (uint32_t)event.peer->data));
+				m_packetQueue.push_back(ENETPacket(event.packet, event.channelID, (uint32_t)((uint64_t)event.peer->data)));
 				break;
 			default:
 				return true;

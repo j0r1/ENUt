@@ -3,7 +3,7 @@
   This file is a part of ENUt, a library containing network
   programming utilities.
   
-  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+  Copyright (C) 2006-2012  Hasselt University - Expertise Centre for
                       Digital Media (EDM) (http://www.edm.uhasselt.be)
 
   This library is free software; you can redistribute it and/or
@@ -23,22 +23,13 @@
 
 */
 
-#ifndef NUTCONFIG_UNIX_H
+#ifndef NUTTYPES_H
 
-#define NUTCONFIG_UNIX_H
+#define NUTTYPES_H
 
-@NUTCONFIG_SUPPORT_ENET@
+${ENUT_WINSOCK_HEADERS}
+${ENUT_INTTYPE_HEADERS}
 
-@NUTCONFIG_SUPPORT_IPV6@
+#endif // NUTTYPES_H
 
-@NUTCONFIG_SUPPORT_IPV6_MULTICAST@
 
-@NUTCONFIG_SUPPORT_POLL@
-
-@NUTCONFIG_SUPPORT_IPPKTINFO@
-
-@NUTCONFIG_SUPPORT_MSGNOSIGNAL@
-
-@NUTCONFIG_SUPPORT_SONOSIGPIPE@
-
-#endif // NUTCONFIG_UNIX_H

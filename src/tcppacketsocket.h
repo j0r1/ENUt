@@ -3,7 +3,7 @@
   This file is a part of ENUt, a library containing network
   programming utilities.
   
-  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+  Copyright (C) 2006-2012  Hasselt University - Expertise Centre for
                       Digital Media (EDM) (http://www.edm.uhasselt.be)
 
   This library is free software; you can redistribute it and/or
@@ -43,7 +43,7 @@ class TCPSocket;
 class Packet;
 	
 /** A class which allows you to send and receive packets over a TCP connection. */
-class TCPPacketSocket : public Socket
+class ENUT_IMPORTEXPORT TCPPacketSocket : public Socket
 {
 public:
 	/** Create a socket which can be used to send packets over a TCP connection.
@@ -83,7 +83,7 @@ public:
 	 *  packets are stored in this queue by calling the TCPPacketSocket::poll function.
 	 *  Packets can be extracted from this queue by calling the TCPPacketSocket::read function.
 	 */
-	bool isPacketAvailable();
+	bool isPacketAvailable()								{ return !m_packetQueue.empty(); }
 	
 	/** Extract the first packet which is stored in the internal queue and store the data
 	 *  in \c packet.
@@ -108,7 +108,7 @@ protected:
 private:
 	// make sure we can't copy the socket
 	TCPPacketSocket(const TCPPacketSocket &s) : Socket(s)					{ }
-	TCPPacketSocket &operator=(const TCPPacketSocket &s)					{ }
+	TCPPacketSocket &operator=(const TCPPacketSocket &s)					{ return *this; }
 
 	TCPSocket *m_pBaseSocket;
 	uint32_t m_maximumSendLength;
