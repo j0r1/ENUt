@@ -13,6 +13,7 @@ class ErrorBase
 public:
 	ErrorBase()									{ m_objectName = std::string("Unnamed object"); }
 	ErrorBase(const std::string &objName)						{ m_objectName = objName; }
+	virtual ~ErrorBase()								{ }
 	std::string getObjectName() const						{ return m_objectName; }
 	std::string getErrorString() const						{ return m_errorString; }
 protected:
