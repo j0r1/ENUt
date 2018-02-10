@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "netutil_wce", "netutil_wce.vcproj", "{BAC97B79-C1B2-4776-995A-4C603AFDF096}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "enut_wce", "enut_wce.vcproj", "{BAC97B79-C1B2-4776-995A-4C603AFDF096}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,3 +1,32 @@
+/*
+    
+  This file is a part of ENUt, a library containing network
+  programming utilities.
+  
+  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+                      Digital Media (EDM) (http://www.edm.uhasselt.be)
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  
+  USA
+
+*/
+
+/**
+ * \file ipv6address.h
+ */
+
 #ifndef NUT_IPV6ADDRESS_H
 
 #define NUT_IPV6ADDRESS_H
@@ -12,14 +41,22 @@
 namespace nut
 {
 
+/** An IPv6 address. */
 class IPv6Address : public NetworkLayerAddress
 {
 public:
 	IPv6Address() : NetworkLayerAddress(IPv6)						{ for (int i = 0 ; i < 16 ; i++) m_ip.s6_addr[i] = 0; }
+
+	/** Creates an instance based on \c ip. */
 	IPv6Address(in6_addr ip) : NetworkLayerAddress(IPv6)					{ ip = m_ip; }
+
+	/** Creates an instance based on the sixteen bytes in \c ip. */
 	IPv6Address(const uint8_t ip[16]) : NetworkLayerAddress(IPv6)				{ for (int i = 0 ; i < 16 ; i++) m_ip.s6_addr[i] = ip[i]; }
 	~IPv6Address()										{ }	
+
+	/** Returns the address in the form of an \c in6_addr instance. */
 	in6_addr getAddress() const								{ return m_ip; }
+
 	NetworkLayerAddress *createCopy() const							{ return new IPv6Address(m_ip); }
 	bool isSameAddress(const NetworkLayerAddress &address) const;
 	std::string getAddressString() const;
@@ -40,23 +77,6 @@ inline bool IPv6Address::isSameAddress(const NetworkLayerAddress &address) const
 			return false;
 	}
 	return true;
-}
-
-inline std::string IPv6Address::getAddressString() const
-{
-	char str[48];
-	uint16_t ip16[8];
-	int i,j;
-
-	for (i = 0,j = 0 ; j < 8 ; j++,i += 2)
-	{
-		ip16[j] = (((uint16_t)m_ip.s6_addr[i])<<8);
-		ip16[j] |= ((uint16_t)m_ip.s6_addr[i+1]);
-	}
-
-        snprintf(str,48,"%04X:%04X:%04X:%04X:%04X:%04X:%04X:%04X",(int)ip16[0],(int)ip16[1],(int)ip16[2],(int)ip16[3],
-	                                                          (int)ip16[4],(int)ip16[5],(int)ip16[6],(int)ip16[7]);
-	return std::string(str);
 }
 
 } // end namespace

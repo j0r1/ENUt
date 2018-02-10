@@ -1,2 +1,57 @@
-Algemene netwerk utilities zoals een TCPSocket, UDPSocket etc.
+
+
+                          EDM Network Utilities (ENUt)
+                                    (1.0.0)
+
+
+1. INTRODUCTION
+
+ENUt stands for 'EDM Network Utilities', a library meant to make network
+programming a bit easier.
+
+2. LICENSE
+
+The license which applies to this library is the LGPL. You can find the
+full version in the file LICENSE.LGPL which is included in the library
+archive. The short version is the following:
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  
+ USA.
+
+3. INSTALLATION
+
+The library depends on ErrUt, which can be found here:
+http://research.edm.uhasselt.be/jori/errut/errut.html
+
+3.1 Unix-like platforms
+
+Use the configure script and make to build the library. Run the configure
+script with option '--help' to see which options can be specified.
+
+3.2 Win32/WinCE
+
+Project files for MS Visual Studio 8 are included in the library archive.
+Take a look at the file 'nutconfig_win.h' to enable or disable some features.
+You may have to tune the project settings to make sure the right locations
+of other include files are set.
+
+4. CONTACT
+
+The library homepage can be found at the following location:
+http://research.edm.uhasselt.be/enut/
+		
+You can reach the ENUt developers by sending an e-mail to
+enutinfo@edm.uhasselt.be.
 

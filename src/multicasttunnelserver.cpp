@@ -1,3 +1,32 @@
+/*
+    
+  This file is a part of ENUt, a library containing network
+  programming utilities.
+  
+  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+                      Digital Media (EDM) (http://www.edm.uhasselt.be)
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  
+  USA
+
+*/
+
+#include "nutconfig.h"
+
+#ifdef NUTCONFIG_SUPPORT_ENET
+
 #include "multicasttunnelserver.h"
 #include "enetsocket.h"
 #include "udpv4socket.h"
@@ -14,6 +43,7 @@
 using namespace nut;
 
 int debugLevel = 0;
+int timeToLive = 1;
 
 #define LOG_DEBUG	3
 #define LOG_INFO	2
@@ -75,7 +105,7 @@ void SignalHandler(int val)
 }
 #endif // ! (WIN32 || _WIN32_WCE)
 
-inline void checkError(bool ret, ErrorBase &obj)
+inline void checkError(bool ret, errut::ErrorBase &obj)
 {
 	if (ret)
 		return;
@@ -86,7 +116,7 @@ inline void checkError(bool ret, ErrorBase &obj)
 	exit(-1);
 }
 
-inline void checkError(bool ret, ErrorBase *obj)
+inline void checkError(bool ret, errut::ErrorBase *obj)
 {
 	if (ret)
 		return;
@@ -234,6 +264,7 @@ public:
 			delete pSock;
 			return false;
 		}
+		pSock->setMulticastTTL((uint8_t)timeToLive);
 
 		// enable multicast loopback
 
@@ -605,14 +636,15 @@ void processIncomingPackets(MulticastSocketInfo &sockInf, ENETSocket &serverSock
 
 int main(int argc, char *argv[])
 {
-	if (argc != 4)
+	if (argc != 5)
 	{
 		std::cerr << "Usage: " << std::endl;
-		std::cerr << " " << std::string(argv[0]) << " port maxconnections debuglevel" << std::endl;
+		std::cerr << " " << std::string(argv[0]) << " port maxconnections debuglevel ttl" << std::endl;
 		return -1;
 	}
 
 	debugLevel = atoi(argv[3]);
+	timeToLive = atoi(argv[4]);
 
 #if defined(WIN32) || defined(_WIN32_WCE)
 	WSADATA dat;
@@ -645,7 +677,7 @@ int main(int argc, char *argv[])
 		for (it = socketInfo.begin() ; it != socketInfo.end() ; it++)
 			waiter.addSocket(*((*it).second->getSocket()));
 
-		ret = waiter.wait(0,100000); // wait at most 100 milliseconds
+		ret = waiter.wait(0, 100000); // wait at most 100 milliseconds
 		checkError(ret, waiter);
 
 		ret = serverSocket.poll();
@@ -668,4 +700,17 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+
+#else // No ENet support
+
+#include <iostream>
+
+int main(void)
+{
+	std::cerr << "ENet support has to be available at compile time to" << std::endl 
+		  << "make this program work." << std::endl;
+	return -1;
+}
+
+#endif // NUTCONFIG_SUPPORT_ENET
 

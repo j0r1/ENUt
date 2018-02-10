@@ -1,14 +1,18 @@
-lib_LTLIBRARIES = libnetutil.la
+lib_LTLIBRARIES = libenut.la
 bin_PROGRAMS = multicasttunnelserver
-libnetutil_la_SOURCES = \
+libenut_la_SOURCES = \
 tcpv4socket.cpp \
 tcpv6socket.cpp \
 udpv4socket.cpp \
 udpv6socket.cpp \
 socketwaiter.cpp \
 enetsocket.cpp \
-multicasttunnelsocket.cpp
-libnetutilinclude_HEADERS = \
+multicasttunnelsocket.cpp \
+ipv4address.cpp \
+ipv6address.cpp \
+socket.cpp \
+tcppacketsocket.cpp
+libenutinclude_HEADERS = \
 tcpv4socket.h \
 tcpv6socket.h \
 tcpsocket.h \
@@ -21,7 +25,6 @@ nutconfig_win.h \
 nuttypes.h \
 nuttypes_unix.h \
 nuttypes_win.h \
-errorbase.h \
 ipv4address.h \
 ipv6address.h \
 networklayeraddress.h \
@@ -30,10 +33,11 @@ socketwaiter.h \
 enetsocket.h \
 multicasttunnelsocket.h \
 datagramsocket.h \
-multicasttunnelserver.h
+multicasttunnelserver.h \
+tcppacketsocket.h \
+packet.h
 multicasttunnelserver_SOURCES = multicasttunnelserver.cpp
-multicasttunnelserver_LDFLAGS = .libs/libnetutil.a -lenet
-INCLUDES = 
-libnetutil_la_LDFLAGS = -release @VERSION@
-libnetutilincludedir = ${includedir}/netutil
+multicasttunnelserver_LDFLAGS = libenut.la @NUTLINKLIBS@
+libenut_la_LDFLAGS = -release @VERSION@
+libenutincludedir = ${includedir}/enut/
 

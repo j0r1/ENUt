@@ -1,3 +1,32 @@
+/*
+    
+  This file is a part of ENUt, a library containing network
+  programming utilities.
+  
+  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+                      Digital Media (EDM) (http://www.edm.uhasselt.be)
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  
+  USA
+
+*/
+
+#include "nutconfig.h"
+
+#ifdef NUTCONFIG_SUPPORT_ENET
+
 #include "multicasttunnelsocket.h"
 #include "enetsocket.h"
 #include "ipv4address.h"
@@ -203,7 +232,7 @@ bool MulticastTunnelSocket::destroy()
 	return true;
 }
 
-uint16_t MulticastTunnelSocket::getLocalPortNumber()
+uint16_t MulticastTunnelSocket::getLocalPortNumber() const
 {
 	return m_pEnetSocket->getLocalPort();
 }
@@ -267,35 +296,6 @@ bool MulticastTunnelSocket::leaveMulticastGroup(const NetworkLayerAddress &group
 	if (!writeCommand(MCASTTUNNEL_COMMAND_LEAVE, buf, sizeof(uint32_t)))
 		return false;
 
-	return true;
-}
-
-bool MulticastTunnelSocket::waitForData(int seconds, int microSeconds)
-{
-	if (!m_init)
-	{
-		setErrorString("Not initialized");
-		return false;
-	}
-	
-	if (m_pEnetSocket->getNumberOfConnections() == 0)
-	{
-		setErrorString("Server connection lost");
-		return false;
-	}
-	
-	int millisec;
-	
-	if (seconds >= 0 && microSeconds >= 0)
-		millisec = microSeconds/1000+seconds*1000;
-	else
-		millisec = 0;
-
-	if (!m_pEnetSocket->waitForEvent(millisec))
-	{
-		setErrorString(m_pEnetSocket->getErrorString());
-		return false;
-	}
 	return true;
 }
 
@@ -447,21 +447,21 @@ bool MulticastTunnelSocket::read(void *buffer, size_t &bufferSize)
 	return true;
 }
 
-const NetworkLayerAddress *MulticastTunnelSocket::getLastSourceAddress()
+const NetworkLayerAddress *MulticastTunnelSocket::getLastSourceAddress() const
 {
 	if (!m_init || !m_pLastReadPacket)
 		return 0;
 	return m_pLastReadPacket->getSourceAddress();
 }
 
-uint16_t MulticastTunnelSocket::getLastSourcePort()
+uint16_t MulticastTunnelSocket::getLastSourcePort() const
 {
 	if (!m_init || !m_pLastReadPacket)
 		return 0;
 	return m_pLastReadPacket->getSourcePort();
 }
 
-const NetworkLayerAddress *MulticastTunnelSocket::getLastDestinationAddress()
+const NetworkLayerAddress *MulticastTunnelSocket::getLastDestinationAddress() const
 {
 	if (!m_init || !m_pLastReadPacket)
 		return 0;
@@ -554,3 +554,6 @@ bool MulticastTunnelSocket::writeCommand(uint8_t cmdNum, uint8_t *pData, size_t 
 }
 
 }
+
+#endif // NUTCONFIG_SUPPORT_ENET
+

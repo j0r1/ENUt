@@ -1,10 +1,39 @@
+/*
+    
+  This file is a part of ENUt, a library containing network
+  programming utilities.
+  
+  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+                      Digital Media (EDM) (http://www.edm.uhasselt.be)
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  
+  USA
+
+*/
+
+/**
+ * \file socket.h
+ */
+
 #ifndef NUT_SOCKET_H
 
 #define NUT_SOCKET_H
 
 #include "nutconfig.h"
 #include "nuttypes.h"
-#include "errorbase.h"
+#include <errut/errorbase.h>
 #include <stdio.h>
 #if !(defined(WIN32) || defined(_WIN32_WCE))
 	#include <sys/socket.h>
@@ -21,17 +50,42 @@
 namespace nut
 {
 
-class Socket : public ErrorBase
+/** Base class for sockets. */
+class Socket : public errut::ErrorBase
 {
 protected:
+	/** Creates an unnamed socket. */
 	Socket()											{ m_dataAvailable = false; }
-	Socket(const std::string &objName) : ErrorBase(objName)						{ }
+
+	/** Creates a socket with object name \c objName. */
+	Socket(const std::string &objName) : errut::ErrorBase(objName)					{ }
 public:
 	~Socket()											{ }
 
+	/** Sets a specific socket option.
+	 *  Sets a specific socket option. This function is basically a wrapper for the
+	 *  \c setsockopt function. */
 	bool setSocketOption(int level, int optname, const void *optval, socklen_t optlen);
+
+	/** Retrieves a specific socket option.
+	 *  Retrieves a specific socket option. This function is basically a wrapper for
+	 *  the \c getsockopt function. */
 	bool getSocketOption(int level, int optname, void *optval, socklen_t *optlen);
 	
+	/** Wait for incoming data or for an incoming connection request.
+	 *  Wait for incoming data or for an incoming connection request.
+	 *  The maximum time to wait is specified by \c seconds and
+	 *  \c microSeconds. This function is equivalent with using a
+	 *  SocketWaiter instance, adding this socket and calling the
+	 *  SocketWaiter::wait function. As a result, the isDataAvailable
+	 *  function can be used after calling this function.
+	 */
+	bool waitForData(int seconds = -1, int microSeconds = -1);
+
+	/** When the socket was used by a SocketWaiter instance, this flag indicates if
+	 *  data is available after the SocketWaiter::wait function was called (this function
+	 *  is not used in a socket's getAvailableDataLength function). 
+	 */
 	bool isDataAvailable() const									{ return m_dataAvailable; }
 protected:
 #if (defined(WIN32) || defined(_WIN32_WCE))
@@ -47,51 +101,6 @@ private:
 	friend class SocketWaiter;
 };
 	
-inline bool Socket::setSocketOption(int level, int optname, const void *optval, socklen_t optlen)
-{
-#if (defined(WIN32) || defined(_WIN32_WCE))
-	int status = setsockopt(getSocketDescriptor(), level, optname, (const char *)optval, optlen);
-#else
-	int status = setsockopt(getSocketDescriptor(), level, optname, optval, optlen);
-#endif // WIN32 || _WIN32_WCE
-	
-	if (status != 0)
-	{
-#if (defined(WIN32) || defined(_WIN32_WCE))
-		char str[32];
-
-		_snprintf(str,32,"Winsock error: %d",WSAGetLastError());
-		setErrorString(std::string("Couldn't set socket option: ") + std::string(str));
-#else
-		setErrorString(std::string("Couldn't set socket option: ") + std::string(strerror(errno)));
-#endif // WIN32 || _WIN32_WCE
-		return false;
-	}
-	return true;
-}
-
-inline bool Socket::getSocketOption(int level, int optname, void *optval, socklen_t *optlen)
-{
-#if (defined(WIN32) || defined(_WIN32_WCE))
-	int status = getsockopt(getSocketDescriptor(), level, optname, (char *)optval, optlen);
-#else
-	int status = getsockopt(getSocketDescriptor(), level, optname, optval, optlen);
-#endif // WIN32 || _WIN32_WCE
-	if (status != 0)
-	{
-#if (defined(WIN32) || defined(_WIN32_WCE))
-		char str[32];
-
-		_snprintf(str,32,"Winsock error: %d",WSAGetLastError());
-		setErrorString(std::string("Couldn't get socket option: ") + std::string(str));
-#else
-		setErrorString(std::string("Couldn't get socket option: ") + std::string(strerror(errno)));
-#endif // WIN32 || _WIN32_WCE
-		return false;
-	}
-	return true;
-}
-
 } // end namespace
 	
 #endif // NUT_SOCKET_H

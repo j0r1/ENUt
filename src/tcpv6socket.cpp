@@ -1,3 +1,28 @@
+/*
+    
+  This file is a part of ENUt, a library containing network
+  programming utilities.
+  
+  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+                      Digital Media (EDM) (http://www.edm.uhasselt.be)
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  
+  USA
+
+*/
+
 #include "nutconfig.h"
 
 #ifdef NUTCONFIG_SUPPORT_IPV6
@@ -358,47 +383,6 @@ TCPv6Socket::TCPv6Socket(int sock, uint16_t localPort, in6_addr destIP, uint16_t
 	m_destIP = new IPv6Address(destIP);
 	m_destPort = destPort;
 	m_localPort = localPort;
-}
-
-bool TCPv6Socket::waitForData(int seconds, int microSeconds)
-{
-	if (m_sock == -1)
-	{
-		setErrorString(TCPV6SOCKET_ERRSTR_NOTCREATED);
-		return false;
-	}	
-
-	/*if (!m_connected)
-	{
-		setErrorString(TCPV6SOCKET_ERRSTR_NOTCONNECTED);
-		return false;
-	}*/
-
-	fd_set fdset;
-	int status;
-	
-	FD_ZERO(&fdset);
-	FD_SET(m_sock, &fdset);
-
-	if (seconds >= 0 && microSeconds >= 0)
-	{
-		struct timeval tv;
-
-		tv.tv_sec = seconds;
-		tv.tv_usec = microSeconds;
-		
-		status = select(FD_SETSIZE, &fdset, 0, 0, &tv);
-	}
-	else
-		status = select(FD_SETSIZE, &fdset, 0, 0, 0);
-
-	if (status == -1)
-	{
-		setErrorString(std::string(TCPV6SOCKET_ERRSTR_CANTSELECT) + std::string(strerror(errno)));
-		return false;
-	}
-	
-	return true;
 }
 
 } // end namespace

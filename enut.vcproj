@@ -2,24 +2,25 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="netutil_wce"
-	ProjectGUID="{BAC97B79-C1B2-4776-995A-4C603AFDF096}"
+	Name="enut"
+	ProjectGUID="{D9CC9B48-CA76-4025-9281-169F16FE4B6C}"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
 		<Platform
-			Name="Pocket PC 2003 (ARMV4)"
+			Name="Win32"
 		/>
 	</Platforms>
 	<ToolFiles>
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug|Pocket PC 2003 (ARMV4)"
-			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			Name="Debug|Win32"
+			OutputDirectory="Debug"
+			IntermediateDirectory="Debug"
 			ConfigurationType="4"
-			CharacterSet="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -38,32 +39,29 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="../enet/include"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
+				AdditionalIncludeDirectories="../enet-1.2/include/, ../errut-1.0.0/include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				Detect64BitPortabilityProblems="true"
+				DebugInformationFormat="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalOptions=" /subsystem:windowsce,4.20 /machine:ARM"
-				OutputFile="$(OutDir)/netutil_wce.lib"
+				OutputFile="$(OutDir)/enut.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -75,26 +73,21 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCCodeSignTool"
+				Name="VCFxCopTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
+				Description="Copying header files"
+				CommandLine="&quot;$(ProjectDir)\copyheaderfiles.bat&quot; &quot;$(ProjectDir)&quot;"
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Pocket PC 2003 (ARMV4)"
-			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			Name="Release|Win32"
+			OutputDirectory="Release"
+			IntermediateDirectory="Release"
 			ConfigurationType="4"
-			CharacterSet="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -113,13 +106,12 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="2"
-				AdditionalIncludeDirectories="../enet/include"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
+				AdditionalIncludeDirectories="../enet-1.2/include/, ../errut-1.0.0/include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
+				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -127,17 +119,13 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalOptions=" /subsystem:windowsce,4.20 /machine:ARM"
-				OutputFile="$(OutDir)/netutil_wce.lib"
+				OutputFile="$(OutDir)/enut.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -149,18 +137,12 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCCodeSignTool"
+				Name="VCFxCopTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
+				Description="Copying header files"
+				CommandLine="&quot;$(ProjectDir)\copyheaderfiles.bat&quot; &quot;$(ProjectDir)&quot;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -169,7 +151,7 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
@@ -177,7 +159,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\ipv4address.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\ipv6address.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\multicasttunnelsocket.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\socket.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\socketwaiter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tcppacketsocket.cpp"
 				>
 			</File>
 			<File
@@ -196,10 +198,6 @@
 				RelativePath=".\src\udpv6socket.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\src\multicasttunnelsocket.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -207,11 +205,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\src\enetsocket.h"
+				RelativePath=".\src\datagramsocket.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\errorbase.h"
+				RelativePath=".\src\enetsocket.h"
 				>
 			</File>
 			<File
@@ -220,6 +218,14 @@
 			</File>
 			<File
 				RelativePath=".\src\ipv6address.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\multicasttunnelserver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\multicasttunnelsocket.h"
 				>
 			</File>
 			<File
@@ -243,11 +249,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\packet.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\socket.h"
 				>
 			</File>
 			<File
 				RelativePath=".\src\socketwaiter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tcppacketsocket.h"
 				>
 			</File>
 			<File
@@ -272,14 +286,6 @@
 			</File>
 			<File
 				RelativePath=".\src\udpv6socket.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\multicasttunnelsocket.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\datagramsocket.h"
 				>
 			</File>
 		</Filter>

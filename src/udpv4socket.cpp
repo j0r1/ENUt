@@ -1,3 +1,28 @@
+/*
+    
+  This file is a part of ENUt, a library containing network
+  programming utilities.
+  
+  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+                      Digital Media (EDM) (http://www.edm.uhasselt.be)
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  
+  USA
+
+*/
+
 #include "nutconfig.h"
 #include "udpv4socket.h"
 #include "ipv4address.h"
@@ -292,13 +317,39 @@ bool UDPv4Socket::getAvailableDataLength(size_t &length, bool &available)
 		recvfrom(m_sock, (char *)buf, 1, MSG_PEEK, (struct sockaddr *)&addr, &len);
 		if (b)
 			setNonBlocking(false);
-#else
-		recvfrom(m_sock, buf, 1, MSG_PEEK|MSG_DONTWAIT, (struct sockaddr *)&addr, &len);
-#endif // WIN32 || _WIN32_WCE
+
 		if (addr.sin_family == AF_INET)
+		{
+			// There definitely is a packet, make sure to read the length again
+			// since it's possible that a packet has been received after the
+			// previous ioctl call, but before the recvfrom call
+			if (NUTIOCTL(m_sock, FIONREAD, &num) != 0)
+			{
+				setErrorString(std::string(UDPV4SOCKET_ERRSTR_IOCTLERROR) + getSocketErrorString());
+				return false;
+			}
+
+			length = (size_t)num;
 			available = true;
+		}
 		else
 			available = false;
+
+#else
+		// Make sure we read the length again, since in principle it's possible that a packet
+		// has been received just now
+		length = (size_t)recvfrom(m_sock, buf, 1, MSG_PEEK|MSG_DONTWAIT|MSG_TRUNC, (struct sockaddr *)&addr, &len);
+		if (addr.sin_family == AF_INET)
+		{
+			available = true;
+			// length has been filled in correctly
+		}
+		else
+		{
+			available = false;
+			length = 0;
+		}
+#endif // WIN32 || _WIN32_WCE
 	}
 	return true;
 }
@@ -539,41 +590,6 @@ bool UDPv4Socket::internalCreate(uint32_t ip, uint16_t port, bool obtainDestinat
 	
 	return true;
 	
-}
-
-bool UDPv4Socket::waitForData(int seconds, int microSeconds)
-{
-	if (m_sock == NUTSOCKERR)
-	{
-		setErrorString(UDPV4SOCKET_ERRSTR_NOTCREATED);
-		return false;
-	}	
-
-	fd_set fdset;
-	int status;
-	
-	FD_ZERO(&fdset);
-	FD_SET(m_sock, &fdset);
-
-	if (seconds >= 0 && microSeconds >= 0)
-	{
-		struct timeval tv;
-
-		tv.tv_sec = seconds;
-		tv.tv_usec = microSeconds;
-		
-		status = select(FD_SETSIZE, &fdset, 0, 0, &tv);
-	}
-	else
-		status = select(FD_SETSIZE, &fdset, 0, 0, 0);
-
-	if (status == NUTSOCKERR)
-	{
-		setErrorString(std::string(UDPV4SOCKET_ERRSTR_CANTSELECT) + getSocketErrorString());
-		return false;
-	}
-	
-	return true;
 }
 
 std::string UDPv4Socket::getSocketErrorString()

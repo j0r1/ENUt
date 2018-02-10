@@ -1,3 +1,28 @@
+/*
+    
+  This file is a part of ENUt, a library containing network
+  programming utilities.
+  
+  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+                      Digital Media (EDM) (http://www.edm.uhasselt.be)
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  
+  USA
+
+*/
+
 #include "nutconfig.h"
 
 #ifdef NUTCONFIG_SUPPORT_IPV6
@@ -24,6 +49,7 @@
 #define UDPV6SOCKET_ERRSTR_SETSOCKOPTERROR					"Error in 'setsockopt' call: "
 #define UDPV6SOCKET_ERRSTR_CANTSELECT						"Error in 'select' call: "
 #define UDPV6SOCKET_ERRSTR_CANTSETPKTINFO					"Can't set IPV6_PKTINFO: "
+#define UDPV6SOCKET_ERRSTR_NOMULTICASTSUPPORT					"No IPv6 multicast support was available at compile time"
 
 namespace nut
 {
@@ -107,6 +133,8 @@ bool UDPv6Socket::setNonBlocking(bool f)
 										mreq.ipv6mr_interface = 0;\
 										status = setsockopt(socket,IPPROTO_IPV6,type,(const char *)&mreq,sizeof(struct ipv6_mreq));\
 									}
+
+#ifdef NUTCONFIG_SUPPORT_IPV6_MULTICAST
 	
 bool UDPv6Socket::joinMulticastGroup(const NetworkLayerAddress &groupAddress)
 {
@@ -186,7 +214,29 @@ bool UDPv6Socket::setMulticastTTL(uint8_t ttl)
 	}
 	return true;
 }
-	
+
+#else // No IPv6 multicast support
+
+bool UDPv6Socket::joinMulticastGroup(const NetworkLayerAddress &groupAddress)
+{
+	setErrorString(UDPV6SOCKET_ERRSTR_NOMULTICASTSUPPORT);
+	return false;
+}
+
+bool UDPv6Socket::leaveMulticastGroup(const NetworkLayerAddress &groupAddress)
+{
+	setErrorString(UDPV6SOCKET_ERRSTR_NOMULTICASTSUPPORT);
+	return false;	
+}
+
+bool UDPv6Socket::setMulticastTTL(uint8_t ttl)
+{
+	setErrorString(UDPV6SOCKET_ERRSTR_NOMULTICASTSUPPORT);
+	return false;
+}
+
+#endif // NUTCONFIG_SUPPORT_IPV6_MULTICAST
+
 bool UDPv6Socket::write(const void *data, size_t &length, const NetworkLayerAddress &destinationAddress, uint16_t destinationPort)
 {
 	if (m_sock == -1)
@@ -249,7 +299,10 @@ bool UDPv6Socket::getAvailableDataLength(size_t &length, bool &available)
 		socklen_t len = sizeof(struct sockaddr_in6);
 
 		memset(&addr,0,sizeof(struct sockaddr_in6));
-		recvfrom(m_sock, buf, 1, MSG_PEEK|MSG_DONTWAIT, (struct sockaddr *)&addr, &len);
+	
+		// Make sure we read the length again, since in principle it's possible that a packet
+		// has been received just now (after the ioctl call)
+		length = (size_t)recvfrom(m_sock, buf, 1, MSG_PEEK|MSG_DONTWAIT|MSG_TRUNC, (struct sockaddr *)&addr, &len);
 
 		if (addr.sin6_family == AF_INET6)
 			available = true;
@@ -312,7 +365,7 @@ bool UDPv6Socket::read(void *buffer, size_t &bufferSize)
 		ssize_t numReceived = recvmsg(m_sock, &mhdr, 0);
 		if (numReceived == -1)
 		{
-			setErrorString(std::string(UDPV6SOCKET_ERRSTR_CANTREAD) + getSocketErrorString());
+			setErrorString(std::string(UDPV6SOCKET_ERRSTR_CANTREAD) + std::string(strerror(errno)));
 			return false;
 		}
 
@@ -327,9 +380,9 @@ bool UDPv6Socket::read(void *buffer, size_t &bufferSize)
 		{
 			if (chdr->cmsg_level == IPPROTO_IPV6 && chdr->cmsg_type == IPV6_PKTINFO)
 			{
-				struct in_pktinfo *inf = (struct in_pktinfo *)CMSG_DATA(chdr);
+				struct in6_pktinfo *inf = (struct in6_pktinfo *)CMSG_DATA(chdr);
 
-				m_dstIP = IPv6Address(inf->ipi_addr);
+				m_dstIP = IPv6Address(inf->ipi6_addr);
 				done = true;
 			}
 			else
@@ -410,41 +463,6 @@ bool UDPv6Socket::internalCreate(in6_addr ip, uint16_t port, bool obtainDestinat
 	
 	return true;
 	
-}
-
-bool UDPv6Socket::waitForData(int seconds, int microSeconds)
-{
-	if (m_sock == -1)
-	{
-		setErrorString(UDPV6SOCKET_ERRSTR_NOTCREATED);
-		return false;
-	}	
-
-	fd_set fdset;
-	int status;
-	
-	FD_ZERO(&fdset);
-	FD_SET(m_sock, &fdset);
-
-	if (seconds >= 0 && microSeconds >= 0)
-	{
-		struct timeval tv;
-
-		tv.tv_sec = seconds;
-		tv.tv_usec = microSeconds;
-		
-		status = select(FD_SETSIZE, &fdset, 0, 0, &tv);
-	}
-	else
-		status = select(FD_SETSIZE, &fdset, 0, 0, 0);
-
-	if (status == -1)
-	{
-		setErrorString(std::string(UDPV6SOCKET_ERRSTR_CANTSELECT) + std::string(strerror(errno)));
-		return false;
-	}
-	
-	return true;
 }
 
 } // end namespace

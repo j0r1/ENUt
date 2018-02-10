@@ -2,20 +2,20 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="netutil_wce5"
-	ProjectGUID="{1717F2AB-50AA-49CF-AF0F-606856F082A0}"
+	Name="enut_wce"
+	ProjectGUID="{BAC97B79-C1B2-4776-995A-4C603AFDF096}"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
 		<Platform
-			Name="Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
+			Name="Pocket PC 2003 (ARMV4)"
 		/>
 	</Platforms>
 	<ToolFiles>
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
+			Name="Debug|Pocket PC 2003 (ARMV4)"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -40,7 +40,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="../enet/include"
+				AdditionalIncludeDirectories="../enet-1.2/include, ../errut-1.0.0/include"
 				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				MinimalRebuild="true"
 				RuntimeLibrary="3"
@@ -62,8 +62,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalOptions=" /subsystem:windowsce,5.01"
-				OutputFile="$(OutDir)/netutil_wce5.lib"
+				AdditionalOptions=" /subsystem:windowsce,4.20 /machine:ARM"
+				OutputFile="$(OutDir)/enut_wce.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -79,6 +79,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description="Copying header files"
+				CommandLine="&quot;$(ProjectDir)\copyheaderfiles.bat&quot; &quot;$(ProjectDir)&quot;"
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
@@ -90,7 +92,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
+			Name="Release|Pocket PC 2003 (ARMV4)"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -115,12 +117,12 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				AdditionalIncludeDirectories="../enet/include"
+				AdditionalIncludeDirectories="../enet-1.2/include, ../errut-1.0.0/include"
 				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -136,8 +138,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalOptions=" /subsystem:windowsce,5.01"
-				OutputFile="$(OutDir)/netutil_wce5.lib"
+				AdditionalOptions=" /subsystem:windowsce,4.20 /machine:ARM"
+				OutputFile="$(OutDir)/enut_wce.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -153,6 +155,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description="Copying header files"
+				CommandLine="&quot;$(ProjectDir)\copyheaderfiles.bat&quot; &quot;$(ProjectDir)&quot;"
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
@@ -177,7 +181,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\ipv4address.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\ipv6address.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\multicasttunnelsocket.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\socket.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\socketwaiter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tcppacketsocket.cpp"
 				>
 			</File>
 			<File
@@ -196,10 +220,6 @@
 				RelativePath=".\src\udpv6socket.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\src\multicasttunnelsocket.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -207,11 +227,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\src\enetsocket.h"
+				RelativePath=".\src\datagramsocket.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\errorbase.h"
+				RelativePath=".\src\enetsocket.h"
 				>
 			</File>
 			<File
@@ -220,6 +240,14 @@
 			</File>
 			<File
 				RelativePath=".\src\ipv6address.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\multicasttunnelserver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\multicasttunnelsocket.h"
 				>
 			</File>
 			<File
@@ -243,11 +271,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\packet.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\socket.h"
 				>
 			</File>
 			<File
 				RelativePath=".\src\socketwaiter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tcppacketsocket.h"
 				>
 			</File>
 			<File
@@ -272,14 +308,6 @@
 			</File>
 			<File
 				RelativePath=".\src\udpv6socket.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\multicasttunnelsocket.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\datagramsocket.h"
 				>
 			</File>
 		</Filter>

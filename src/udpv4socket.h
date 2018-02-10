@@ -1,3 +1,32 @@
+/*
+    
+  This file is a part of ENUt, a library containing network
+  programming utilities.
+  
+  Copyright (C) 2006-2008  Hasselt University - Expertise Centre for
+                      Digital Media (EDM) (http://www.edm.uhasselt.be)
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  
+  USA
+
+*/
+
+/**
+ * \file udpv4socket.h
+ */
+
 #ifndef NUT_UDPV4SOCKET_H
 
 #define NUT_UDPV4SOCKET_H
@@ -13,11 +42,16 @@
 namespace nut
 {
 
+/** An UDP over IPv4 socket. */
 class UDPv4Socket : public UDPSocket
 {
 public:
+	/** Constructs an UDP over IPv4 socket. */
 	UDPv4Socket();
+
+	/** Constructs an UDP over IPv4 socket with object name \c objName. */
 	UDPv4Socket(const std::string &objName);
+	
 	~UDPv4Socket();
 
 	bool create(uint16_t portNumber = 0, bool obtainDestination = false);
@@ -26,20 +60,19 @@ public:
 	
 	bool setNonBlocking(bool f = true);
 	
-	uint16_t getLocalPortNumber()									{ return m_localPort; }
+	uint16_t getLocalPortNumber() const								{ return m_localPort; }
 	
 	bool joinMulticastGroup(const NetworkLayerAddress &groupAddress);
 	bool leaveMulticastGroup(const NetworkLayerAddress &groupAddress);
 	bool setMulticastTTL(uint8_t ttl);
 	
-	bool waitForData(int seconds = -1, int microSeconds = -1); 	
 	bool write(const void *data, size_t &length, const NetworkLayerAddress &destinationAddress, 
 	           uint16_t destinationPort);
 	bool getAvailableDataLength(size_t &length, bool &available);
 	bool read(void *buffer, size_t &bufferSize);
-	const NetworkLayerAddress *getLastSourceAddress()						{ return &m_srcIP; }
-	uint16_t getLastSourcePort()									{ return m_srcPort; }
-	const NetworkLayerAddress *getLastDestinationAddress()						{ return &m_dstIP; }
+	const NetworkLayerAddress *getLastSourceAddress() const						{ return &m_srcIP; }
+	uint16_t getLastSourcePort() const								{ return m_srcPort; }
+	const NetworkLayerAddress *getLastDestinationAddress() const					{ return &m_dstIP; }
 protected:
 #if (defined(WIN32) || defined(_WIN32_WCE))
 	SOCKET getSocketDescriptor()									{ return m_sock; }
@@ -47,6 +80,10 @@ protected:
 	int getSocketDescriptor()									{ return m_sock; }
 #endif // WIN32 || _WIN32_WCE
 private:
+	// make sure we can't copy the socket
+	UDPv4Socket(const UDPv4Socket &s) : UDPSocket(s)						{ }
+	UDPv4Socket &operator=(const UDPv4Socket &s)							{ }
+	
 	void zeroAll();
 	bool internalCreate(uint32_t ip, uint16_t port, bool obtainDestination);
 	std::string getSocketErrorString();
