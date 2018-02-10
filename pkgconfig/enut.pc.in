@@ -1,6 +1,0 @@
-Name: ENUt
-Description: EDM Network Utilities
-Requires:
-Version: ${VERSION}
-Libs: ${ENUT_LIBS_PKGCONFIG}
-Cflags: ${ENUT_INCDIRS_PKGCONFIG}

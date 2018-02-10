@@ -34,26 +34,26 @@ set(SOURCES
 	udpv4socket.cpp
 	udpv6socket.cpp )
 
-if (NOT UNIX)
+if (MSVC)
 	set(CMAKE_DEBUG_POSTFIX _d)
-endif (NOT UNIX)
+endif (MSVC)
 
-if (UNIX OR ENUT_COMPILE_STATIC)
+if (NOT MSVC OR ENUT_COMPILE_STATIC)
 	add_library(enut-static STATIC ${SOURCES} ${HEADERS})
 	set_target_properties(enut-static PROPERTIES OUTPUT_NAME enut)
 	set_target_properties(enut-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 	set(ENUT_INSTALLTARGETS enut-static)
 	target_link_libraries(enut-static ${ENUT_LINK_LIBS})
-endif (UNIX OR ENUT_COMPILE_STATIC)
+endif (NOT MSVC OR ENUT_COMPILE_STATIC)
 
-if (UNIX OR NOT ENUT_COMPILE_STATIC)
+if (NOT MSVC OR NOT ENUT_COMPILE_STATIC)
 	add_library(enut-shared SHARED ${SOURCES} ${HEADERS})
 	set_target_properties(enut-shared PROPERTIES OUTPUT_NAME enut)
 	set_target_properties(enut-shared PROPERTIES VERSION ${VERSION})
 	set_target_properties(enut-shared PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 	set(ENUT_INSTALLTARGETS ${ENUT_INSTALLTARGETS} enut-shared)
 	target_link_libraries(enut-shared ${ENUT_LINK_LIBS})
-endif (UNIX OR NOT ENUT_COMPILE_STATIC)
+endif (NOT MSVC OR NOT ENUT_COMPILE_STATIC)
 
 apply_include_paths("${ENUT_INTERNAL_INCLUDES}")
 apply_include_paths("${ENUT_EXTERNAL_INCLUDES}")
