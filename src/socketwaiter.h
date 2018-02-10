@@ -35,6 +35,11 @@
 #include <errut/errorbase.h>
 #include <list>
 
+#ifdef NUTCONFIG_SUPPORT_POLL
+#include <sys/poll.h>
+#include <vector>
+#endif // NUTCONFIG_SUPPORT_POLL
+
 namespace nut
 {
 
@@ -71,6 +76,9 @@ private:
 	
 	std::string getSocketErrorString();
 	std::list<Socket *> m_sockets;
+#ifdef NUTCONFIG_SUPPORT_POLL
+	std::vector<struct pollfd> m_pollInfo;
+#endif // NUTCONFIG_SUPPORT_POLL
 };
 	
 } // end namespace

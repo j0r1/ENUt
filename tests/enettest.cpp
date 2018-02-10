@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-void checkError(bool ret, const nut::ErrorBase &obj)
+void checkError(bool ret, const errut::ErrorBase &obj)
 {
 	if (ret)
 		return;

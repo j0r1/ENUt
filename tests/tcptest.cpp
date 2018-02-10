@@ -1,8 +1,9 @@
 #include "tcpv4socket.h"
 #include "ipv4address.h"
+#include "socketwaiter.h"
 #include <iostream>
 
-void checkError(bool ret, const nut::ErrorBase &obj)
+void checkError(bool ret, const errut::ErrorBase &obj)
 {
 	if (ret)
 		return;
@@ -31,9 +32,20 @@ int main(void)
 	ret = sock2.create();
 	checkError(ret, sock2);
 	
-	ret = sock2.connect(addr,sock.getLocalPortNumber());
-	checkError(ret, sock2);
+	//ret = sock2.connect(addr,sock.getLocalPortNumber());
+	//checkError(ret, sock2);
 
+	nut::SocketWaiter waiter;
+
+	waiter.addSocket(sock);
+
+	std::cout << "Waiting for connection on port " << sock.getLocalPortNumber() << std::endl;
+	waiter.wait(20, 0);
+	std::cout << "Done" << std::endl;
+
+	if (sock.isDataAvailable())
+		std::cout << "Got incoming connection" << std::endl;
+	
 	ret = sock.accept(&s);
 	checkError(ret, sock2);
 
@@ -47,7 +59,7 @@ int main(void)
 	checkError(ret, sock2);
 
 	std::cout << str << std::endl;
-	
+
 	return 0;
 }
 

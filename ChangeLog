@@ -3,6 +3,11 @@
                               ENUt ChangeLog
 
 
+Version 1.1.0, August 2008:
+ * SocketWaiter now uses 'poll' if available.
+ * EINTR in 'select' or 'poll' is now no longer considered to be an
+   error.
+
 Version 1.0.0, February 2008:
  * Initial release
 

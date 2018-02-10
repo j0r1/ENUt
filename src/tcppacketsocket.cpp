@@ -149,7 +149,7 @@ bool TCPPacketSocket::write(const void *pData, size_t length)
 	}
 
 	m_lastWriteTime = time(0);
-	
+
 	return true;
 }
 

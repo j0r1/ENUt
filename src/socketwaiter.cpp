@@ -36,6 +36,7 @@
 #endif // !(WIN32 || _WIN32_WCE)
 
 #define SOCKETWAITER_ERRSTR_SELECTERR						"Error in select call: "
+#define SOCKETWAITER_ERRSTR_POLLERR						"Error in poll call: "
 #define SOCKETWAITER_ERRSTR_BADSOCKET						"One of the sockets has not been created yet"
 
 namespace nut
@@ -55,6 +56,7 @@ SocketWaiter::~SocketWaiter()
 
 bool SocketWaiter::wait(int seconds, int microseconds)
 {
+#ifndef NUTCONFIG_SUPPORT_POLL
 	fd_set fdset;
 	std::list<Socket *>::const_iterator it;
 	
@@ -84,8 +86,16 @@ bool SocketWaiter::wait(int seconds, int microseconds)
 	
 	if (select(FD_SETSIZE, &fdset, 0, 0, tv2) == NUTSOCKERR)
 	{
-		setErrorString(std::string(SOCKETWAITER_ERRSTR_SELECTERR) + getSocketErrorString());
-		return false;
+		// TODO: for now, ignore signal interrupts
+#if (defined(WIN32) || defined(_WIN32_WCE))
+		if (WSAGetLastError() == WSAEINTR)
+#else
+		if (errno != EINTR) 
+#endif // WIN32 || _WIN32_WCE
+		{
+			setErrorString(std::string(SOCKETWAITER_ERRSTR_SELECTERR) + getSocketErrorString());
+			return false;
+		}
 	}
 	
 	for (it = m_sockets.begin() ; it != m_sockets.end() ; it++)
@@ -93,7 +103,59 @@ bool SocketWaiter::wait(int seconds, int microseconds)
 		if (FD_ISSET((*it)->getSocketDescriptor(), &fdset))
 			(*it)->setDataAvailable(true);
 	}
+#else // Use the 'poll()' function instead
 	
+	std::list<Socket *>::const_iterator it;
+
+	m_pollInfo.resize(0);
+
+	for (it = m_sockets.begin() ; it != m_sockets.end() ; it++)
+	{
+		if ((*it)->getSocketDescriptor() == NUTSOCKERR)
+		{
+			setErrorString(SOCKETWAITER_ERRSTR_BADSOCKET);
+			return false;
+		}
+		(*it)->setDataAvailable(false);
+		
+		struct pollfd pollStruct;
+
+		pollStruct.fd = (*it)->getSocketDescriptor();
+		pollStruct.events = POLLIN;
+		pollStruct.revents = 0;
+
+		m_pollInfo.push_back(pollStruct);
+	}
+	
+	int milliSeconds = -1;
+	
+	if (seconds >= 0 && microseconds >= 0)
+		milliSeconds = microseconds/1000 + seconds*1000;
+
+	if (poll(&(m_pollInfo[0]), m_pollInfo.size(), milliSeconds) < 0)
+	{
+		// TODO: for now, ignore signal interrupts
+#if (defined(WIN32) || defined(_WIN32_WCE))
+		if (WSAGetLastError() == WSAEINTR)
+#else
+		if (errno != EINTR) 
+#endif // WIN32 || _WIN32_WCE
+		{
+			setErrorString(std::string(SOCKETWAITER_ERRSTR_POLLERR) + getSocketErrorString());
+			return false;
+		}
+	}
+	
+	int counter = 0;
+	
+	for (it = m_sockets.begin() ; it != m_sockets.end() ; it++, counter++)
+	{
+		int revents = m_pollInfo[counter].revents;
+
+		if (revents&(POLLIN|POLLHUP|POLLPRI))
+			(*it)->setDataAvailable(true);
+	}
+#endif // NUTCONFIG_SUPPORT_POLL
 	return true;
 }
 	

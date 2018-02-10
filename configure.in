@@ -1,9 +1,10 @@
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(enut, 1.0.0)
+AM_INIT_AUTOMAKE(enut, 1.1.0)
 
 NUTCONFIG_SUPPORT_ENET="// No ENet support"
 NUTCONFIG_SUPPORT_IPV6="// No IPv6 support"
 NUTCONFIG_SUPPORT_IPV6_MULTICAST="// No IPv6 multicast support"
+NUTCONFIG_SUPPORT_POLL="// No 'poll()' support"
 NUTLINKLIBS="$LDFLAGS"
 NUTINCLUDES="$CPPFLAGS"
 
@@ -103,10 +104,20 @@ dnl ---------------------------------------------------------------------------
 AC_CHECK_HEADER(enet/enet.h, [NUTCONFIG_SUPPORT_ENET="#define NUTCONFIG_SUPPORT_ENET"
 			      NUTLINKLIBS="$NUTLINKLIBS -lenet"])
 
+dnl ---------------------------------------------------------------------------
+dnl Check support for 'poll()'
+dnl ---------------------------------------------------------------------------
+
+AC_CHECK_HEADER(sys/poll.h, [NUTCONFIG_SUPPORT_POLL="#define NUTCONFIG_SUPPORT_POLL"])
+
+dnl ---------------------------------------------------------------------------
+dnl Finished
+dnl ---------------------------------------------------------------------------
 
 AC_SUBST(NUTCONFIG_SUPPORT_ENET)
 AC_SUBST(NUTCONFIG_SUPPORT_IPV6)
 AC_SUBST(NUTCONFIG_SUPPORT_IPV6_MULTICAST)
+AC_SUBST(NUTCONFIG_SUPPORT_POLL)
 AC_SUBST(NUTINCLUDES)
 AC_SUBST(NUTLINKLIBS)
 
