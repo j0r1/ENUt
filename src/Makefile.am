@@ -29,7 +29,8 @@ socket.h \
 socketwaiter.h \
 enetsocket.h \
 multicasttunnelsocket.h \
-datagramsocket.h
+datagramsocket.h \
+multicasttunnelserver.h
 multicasttunnelserver_SOURCES = multicasttunnelserver.cpp
 multicasttunnelserver_LDFLAGS = .libs/libnetutil.a -lenet
 INCLUDES = 

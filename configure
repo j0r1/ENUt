@@ -1801,7 +1801,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=netutil
- VERSION=0.1.6
+ VERSION=0.2.1
 
 
 cat >>confdefs.h <<_ACEOF

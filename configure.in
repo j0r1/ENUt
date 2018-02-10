@@ -1,5 +1,5 @@
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(netutil, 0.1.6)
+AM_INIT_AUTOMAKE(netutil, 0.2.1)
 
 AC_LANG(C++)
 AC_PROG_CXX
